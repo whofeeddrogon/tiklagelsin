@@ -134,12 +134,59 @@ def report_comment(comment_id):
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    # searched_comments = conn.execute('SELECT * FROM comments WHERE comment LIKE ?', ('%'+search+'%', )).fetchall()
+    session_user = session.get('user')
+    if not session_user:
+        return redirect(url_for('login'))
+
     conn = get_db_connection()
+    query_string = 'SELECT * FROM comments WHERE comment LIKE ?'
+
+    sort_type = int(request.args.get('sort_type', 0))
+    
+    if sort_type == 0:
+        sort_type = int(session.get('sort_type', 1))
+    else:
+        session['sort_type'] = sort_type
+
+    if sort_type == 1:
+        query_string += ' ORDER BY timeslike DESC'
+    elif sort_type == 2:
+        query_string += ' ORDER BY id'
+    elif sort_type == 3:
+        query_string += ' ORDER BY id DESC'
+
     search = request.form.get('search')
 
-    searched_comments = conn.execute('SELECT * FROM comments WHERE comment LIKE ?', ('%'+search+'%', )).fetchall()
+    page = int(request.args.get('page', '0'))
+    comments = list(conn.execute(query_string, ('%'+search+'%', )).fetchall())
+    total_page = math.ceil(len(comments) / 5)
+
+    comments = [dict(row) for row in comments[5 * page: 5*page + 5]]
+    all_users = conn.execute('SELECT * FROM users').fetchall()
+
+    page = {
+            'prev_num': page - 1,
+            'next_num': page + 1,
+            'total_page': total_page
+            }
+
+    for comment in comments:
+        comment_user = None
+        for user in all_users:
+            if comment['user_uuid'] == user['uuid']:
+                comment_user = user
+                break
+        if not comment['is_anon']:
+            comment['username'] = comment_user['firstname'] + ' ' + comment_user['surname']
+        else:
+            comment['username'] = comment_user['firstname'][0] + '*** ' + comment_user['surname'][0] + '***'
+
+    user = conn.execute('SELECT * FROM users WHERE uuid = ?', (session_user, )).fetchall()[0]
     conn.close()
-    return render_template('index.html', comments=searched_comments, n = 0)
+
+    return render_template('index.html', user = user, comments=comments, \
+                           page = page, sort_type = sort_type)
 
 ## ADMIN KISIMLARI
 
@@ -324,4 +371,4 @@ def download():
 
 if __name__ == '__main__':
     app.secret_key = 'SECRET_KEY_MY_SECRET_KEY_MY_SECRET_KEY'
-    app.run(debug=True, port=5002)
+    app.run(host='0.0.0.0', debug=True, port=80)
