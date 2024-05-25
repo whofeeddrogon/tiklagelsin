@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import uuid
 import datetime
+import hashlib
 
 from api import Response, Label, send_comment
 
@@ -41,6 +42,10 @@ def increment_report(comment_id):
 @app.route('/', methods=['GET', 'POST'])
 def index():
 
+    session_user = session.get('user')
+    if not session_user:
+        return redirect(url_for('login'))
+
     conn = get_db_connection()
 
     sort_type = request.args.get('sort', 1)
@@ -52,54 +57,63 @@ def index():
         query_string = 'SELECT * FROM comments WHERE label = "NON" ORDER BY id DESC'
 
 
-    comments = conn.execute(query_string).fetchall()
+    comments = list(conn.execute(query_string).fetchall())
+    comments = [dict(row) for row in comments]
+    all_users = conn.execute('SELECT * FROM users').fetchall()
+
+    for comment in comments:
+        comment_user = None
+        for user in all_users:
+            if comment['user_uuid'] == user['uuid']:
+                comment_user = user
+                break
+        if not comment['is_anon']:
+            comment['username'] = comment_user['firstname'] + ' ' + comment_user['surname']
+        else:
+            comment['username'] = comment_user['firstname'][0] + '*** ' + comment_user['surname'][0] + '***'
+
+    user = conn.execute('SELECT * FROM users WHERE uuid = ?', (session_user, )).fetchall()[0]
     conn.close()
 
-    # data clipping
-    index = int(request.args.get('n', 3))
-    if index < 3:
-        index = 3
-    if index >= len(comments):
-        index = len(comments)
-        
-    comments = [comments[index] for index in range(index - 3, index)]
-
-    successful = request.args.get('successful', -1)
-    return render_template('index.html', comments=comments, successful = successful, n = index // 3, sort_type = sort_type)
+    return render_template('index.html', user = user, comments=comments, n = 3 // 3, sort_type = sort_type)
 
 @app.route('/add_comment', methods=['POST', 'GET'])
 def add_comment():
     
-    # username formating
-    firstname = request.form.get('firstname')
-    lastname = request.form.get('lastname')
-
-    username = f'{firstname}-{lastname}-{uuid.uuid4()}'
+    user = session.get('user')
     comment = request.form.get('comment')
+    is_anon = request.form.get('anon', '0')
+    if is_anon != 0:
+        is_anon = 1
 
     # label and conf
     label, conf = get_label_comment(comment)
     is_toxic = label == Label.TOXIC
 
     conn = get_db_connection()
-    conn.execute('INSERT INTO comments (username, comment, timesreported, timeslike, label, confidence, date_posted) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                 (username, comment, 0, 0, 'NON' if label == Label.NON else 'TOXIC', 0, datetime.datetime.now().strftime("%B %d, %Y %I:%M%p")))
+    conn.execute('INSERT INTO comments (user_uuid, comment, timesreported, timeslike, label, confidence, date_posted, is_anon) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                 (user, comment, 0, 0, 'NON' if not is_toxic else 'TOXIC', conf, datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), is_anon,))
     conn.commit()
     conn.close()
     
-    return redirect(url_for('index') + '?successful=' + ('0' if is_toxic else '1'))
+    if not is_toxic:
+        flash('Yorumunuz paylaşılmıştır, teşekkür ederiz.', 'ok')
+    else:
+        flash('Bu yorum paylaşılamamaktadır! Lütfen düzeltip tekrar gönderiniz.', 'error')
+
+    return redirect(url_for('index'))
 
 @app.route('/like/<int:comment_id>', methods=['POST'])
 def like_comment(comment_id):
     increment_like(comment_id)
-    n = request.args.get('n', 0)
-    return redirect(url_for('index') + f'/?n={n}')
+    flash('Beğeniniz yoruma başarıyla eklendi.', 'ok')
+    return redirect(url_for('index'))
 
 @app.route('/report/<int:comment_id>', methods=['POST'])
 def report_comment(comment_id):
     increment_report(comment_id)
-    n = request.args.get('n', 0)
-    return redirect(url_for('index') + f'/?n={n}')
+    flash('Yorum başarıyla işaretlendi, teşekkürler.', 'ok')
+    return redirect(url_for('index'))
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
@@ -110,5 +124,79 @@ def search():
     conn.close()
     return render_template('index.html', comments=searched_comments, n = 0)
 
+@app.route('/admin', methods=['GET'])
+def admin():
+    conn = get_db_connection()
+    all_comments = conn.execute('SELECT * FROM comments').fetchall()
+    all_comments = [dict(row) for row in all_comments]
+    conn.close()
+
+    for comment in all_comments:
+        if comment['confidence'] < 0.6:
+            comment['flagged'] = True
+
+    reported_comments = list(filter(lambda c: True if c['timesreported'] > 0 else False, all_comments))
+    published_comments = list(filter(lambda c: True if c['label'] == 'NON' else False, all_comments))
+    deteced_comments = list(filter(lambda c: True if c['label'] == 'TOXIC' else False, all_comments))
+
+    return render_template('admin.html', reported_comments = reported_comments, published_comments = published_comments, deteced_comments = deteced_comments)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    
+    session_user = session.get('user')
+    if session_user:
+        return redirect(url_for('index'))
+    
+    mail = request.form.get('mail')
+    password = hashlib.md5(str(request.form.get('password')).encode('utf-8')).hexdigest()
+
+    conn = get_db_connection()
+    found_users = conn.execute('SELECT * FROM users WHERE mail = ? and password = ?', (mail, password, )).fetchall()
+    conn.close()
+
+    if len(found_users) <= 0:
+        flash('Mail adresi veya şifreniz hatalı, lütfen kontrol ediniz!', 'error')
+        return redirect(url_for('login'))    
+    session['user'] = found_users[0]['uuid']
+
+    return redirect(url_for('index'))
+
+@app.route('/register', methods=['POST'])
+def register():
+
+    firstname = request.form.get('firstname')
+    lastname = request.form.get('lastname')
+    mail = request.form.get('mail')
+    password = hashlib.md5(str(request.form.get('password')).encode('utf-8')).hexdigest()
+
+    conn = get_db_connection()
+    same_mail_users = conn.execute('SELECT * FROM users WHERE mail = ?', (mail, )).fetchall()
+
+    if len(same_mail_users) > 0:
+        flash('Mail adresi kullanımda lütfen giriş yapınız!', 'error')
+        conn.close()
+
+        return redirect(url_for('login'))
+    
+    _uuid = f"{uuid.uuid4()}"
+    conn.execute('INSERT INTO users (firstname, surname, mail, uuid, password) VALUES (?, ?, ?, ?, ?)',
+                 (firstname, lastname, mail, _uuid, password))
+    conn.commit()
+    conn.close()
+
+    flash('Hesabınız başarıyla oluşturuldu, giriş yapabilirsiniz.', 'ok')
+    return redirect(url_for('index'))
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('user')
+    flash('Başarıyla çıkış yapıldı', 'ok')
+
+    return redirect(url_for('login'))
+
 if __name__ == '__main__':
+    app.secret_key = 'SECRET_KEY_MY_SECRET_KEY_MY_SECRET_KEY'
     app.run(debug=True, port=5002)

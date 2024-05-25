@@ -11,8 +11,6 @@
 
 <body>
 
-
-
   <nav class="navbar sticky-top bg-body-tertiary"
     style="background-color: #fff; border-bottom: 1px solid #e91d34; box-sizing:border-box; display:flex;">
     <div class="container-fluid">
@@ -21,13 +19,19 @@
           width="110px" height="60px" style="margin-left: 20px;">
       </a>
       <form method="post" action="/search">
-      <div class="d-flex align-items-center" style="gap: 8px;">
-        <input type="search" class="form-control" placeholder="Yorumlarda ara..." aria-label="Search"
-          style="width: 600px;" name="search">
+        <div class="d-flex align-items-center" style="gap: 8px;">
+          <input type="search" class="form-control" placeholder="Yorumlarda ara..." aria-label="Search"
+            style="width: 600px;" name="search">
 
-        <button type="submit" class="btn btn-success" style="height: 40px; width: 90px;">Ara</button>
+          <button type="submit" class="btn btn-success" style="height: 40px; width: 90px;">Ara</button>
+        </div>
+      </form>
+      <div>
+        {% if user.is_admin %}
+        <a class="btn btn-success text-white" style="height: 40px; width: 90px;" href="/admin">Admin</a>
+        {% endif %}
+        <a class="btn btn-warning text-white" style="height: 40px; width: 90px;" href="/logout">Çıkış</a>
       </div>
-    </form>
     </div>
   </nav>
 
@@ -46,9 +50,12 @@
                 Sırala
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item {% if sort_type != 2 or sort_type != 3 %}active{%endif%}" href="/?sort=1">Önerilen</a></li>
-                <li><a class="dropdown-item {% if sort_type == 2 %}active{%endif%}" href="/?sort=2">Yeniden eskiye</a></li>
-                <li><a class="dropdown-item {% if sort_type == 3 %}active{%endif%}" href="/?sort=3">Eskiden yeniye</a></li>
+                <li><a class="dropdown-item {% if sort_type != 2 or sort_type != 3 %}active{%endif%}"
+                    href="/?sort=1">Önerilen</a></li>
+                <li><a class="dropdown-item {% if sort_type == 2 %}active{%endif%}" href="/?sort=2">Yeniden eskiye</a>
+                </li>
+                <li><a class="dropdown-item {% if sort_type == 3 %}active{%endif%}" href="/?sort=3">Eskiden yeniye</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -72,7 +79,8 @@
                 <!-- Like and Report Buttons -->
 
                 <div class="seller-action" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <form class="rnr-com-like" action="{{ url_for('like_comment', comment_id=comment.id) }}" method="post">
+                  <form class="rnr-com-like" action="{{ url_for('like_comment', comment_id=comment.id) }}"
+                    method="post">
                     <button type="submit" class="btn">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="#666666"
                         class="bi bi-hand-thumbs-up-fill" viewBox="0 2 16 16">
@@ -94,7 +102,7 @@
                     </button>
                   </form>
                 </div>
-                
+
 
               </div>
             </li>
@@ -118,25 +126,25 @@
           </a>
         </li>
 
-        {% if n < 3%}
+        {% if n < 3%} <li class="page-item"><a class="page-link" href="/?n=3&sort={{ sort_type }}">1</a></li>
+          <li class="page-item"><a class="page-link" href="/?n=6&sort={{ sort_type }}">2</a></li>
+          <li class="page-item"><a class="page-link" href="/?n=9&sort={{ sort_type }}">3</a></li>
 
-        <li class="page-item"><a class="page-link" href="/?n=3&sort={{ sort_type }}">1</a></li>
-        <li class="page-item"><a class="page-link" href="/?n=6&sort={{ sort_type }}">2</a></li>
-        <li class="page-item"><a class="page-link" href="/?n=9&sort={{ sort_type }}">3</a></li>
+          {% else %}
 
-        {% else %}
+          <li class="page-item"><a class="page-link" href="/?n={{ 3* (n - 1) }}&sort={{ sort_type }}">{{ n - 1 }}</a>
+          </li>
+          <li class="page-item"><a class="page-link" href="/?n={{ 3* n }}&sort={{ sort_type }}">{{ n }}</a></li>
+          <li class="page-item"><a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}">{{ n + 1 }}</a>
+          </li>
 
-        <li class="page-item"><a class="page-link" href="/?n={{ 3* (n - 1) }}&sort={{ sort_type }}">{{ n - 1 }}</a></li>
-        <li class="page-item"><a class="page-link" href="/?n={{ 3* n }}&sort={{ sort_type }}">{{ n }}</a></li>
-        <li class="page-item"><a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}">{{ n + 1 }}</a></li>
+          {% endif %}
 
-        {% endif %}
-
-        <li class="page-item">
-          <a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}" aria-label="Next">
-            <span aria-hidden="true">»</span>
-          </a>
-        </li>
+          <li class="page-item">
+            <a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}" aria-label="Next">
+              <span aria-hidden="true">»</span>
+            </a>
+          </li>
 
 
 
@@ -169,31 +177,22 @@
           </div>
           <div class="bottom-button"
             style="display: flex; justify-content: space-between; align-items: center; gap: 60px;">
-            <div class="input-group" style="margin-top: 10px;">
-              <input type="text" name="firstname" aria-label="First name" placeholder="Ad" class="form-control">
-              <input type="text" name="lastname" aria-label="Last name" placeholder="Soyad" class="form-control">
+
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" name="anon">
+              <label class="form-check-label" for="flexCheckDefault">
+                Yorum yaparken ismim gözükmesin
+              </label>
             </div>
+
             <button type="submit" class="btn btn-success" style="margin-top: 10px; height: 40px; width: 150px;">Yorum
               yap</button>
           </div>
         </div>
-        
-        {% if successful == '1' %}
 
-        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 4px;">
-          Yorumunuz başarıyla paylaşılmıştır! Teşekkür ederiz.
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="mt-2">
+          {% include "info.html" %}
         </div>
-
-        {% endif %}
-
-        {% if successful == '0' %}
-
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 4px;">
-          Bu yorum paylaşılamamaktadır lütfen düzelterek tekrar deneyiniz.
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
 
     </div>
     </form>
