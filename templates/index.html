@@ -1,211 +1,252 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Yorumlar</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  </head>
-  <body>
 
-    <nav class="navbar sticky-top bg-body-tertiary" style="background-color: #fff; border-bottom: 1px solid #e91d34; box-sizing:border-box; display:flex;">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <img src="https://www.tiklagelsin.com/static/tgLogoRed-2e68a5b6e5c0f2f37c792597e8e820f6.png" class="img" width="110px" height="60px" style="margin-left: 20px;">
-          </a>
-          <div class="d-flex align-items-center" style="gap: 8px;">
-          <input type="search" class="form-control" placeholder="Yorumlarda ara..." aria-label="Search" style="width: 600px;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yorumlar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
 
-          <button type="button" class="btn btn-success" style="height: 40px; width: 90px;">Ara</button>
-          </div>
-        </div>
-      </nav>
-
-      <div class="d-flex justify-content-center">
-            <div class="card" style="width: 50rem; margin-top: 20px;">
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                    <div class="container">
-                    <div class="d-flex justify-content-between">
-                        <p class="lead" style="font-size: 35px;">Tüm Değerlendirmeler</p>
-
-                        <div class="dropdown" style="margin-right: 20px; margin-top: 10px;">
-                          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Sırala
-                          </button>
-                          <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Önerilen</a></li>
-                            <li><a class="dropdown-item" href="#">Yeniden eskiye</a></li>
-                            <li><a class="dropdown-item" href="#">Eskiden yeniye</a></li>
-                          </ul>
-                        </div>
-                      </div>
-                        <hr class="rounded" style="border-top: solid 5px #e91d34;">
+<body>
 
 
-            
-                        <div class="comment">
-                            <li class="list-group-item">
-                            <div class="comment-header">
-                                <div class="comment-info" style="box-sizing:border-box; display:flex; gap: 12px; color: #666666; font-size: 14px;">
-                                    <div class="comment-info-item" style="color: #1C1C1C; font-size: 15px;">A**E**</div><div class="comment-info-item">30.11.2002</div>
-                                </div>
-                            </div>
-                            <div class="comment-bottom" style="display: flex; justify-content: space-between; align-items: center;">
 
-                                <div class="comment-text" style="margin: 12px 0;"><p>Doğdum</p>
-                                </div>
+  <nav class="navbar sticky-top bg-body-tertiary"
+    style="background-color: #fff; border-bottom: 1px solid #e91d34; box-sizing:border-box; display:flex;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img src="https://www.tiklagelsin.com/static/tgLogoRed-2e68a5b6e5c0f2f37c792597e8e820f6.png" class="img"
+          width="110px" height="60px" style="margin-left: 20px;">
+      </a>
+      <form method="post" action="/search">
+      <div class="d-flex align-items-center" style="gap: 8px;">
+        <input type="search" class="form-control" placeholder="Yorumlarda ara..." aria-label="Search"
+          style="width: 600px;" name="search">
 
-                                <div class="seller-action" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <div class="rnr-com-like">
-                                        <button type="button" class="btn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="#666666" class="bi bi-hand-thumbs-up-fill" viewBox="0 2 16 16">
-                            <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"></path>
-                          </svg>
-                                            <span class="visually-hidden">Button</span>
-                                          </button><span style="color: #a3a2a2; font-size: 12px;">(0)</span>
-                                    </div>
+        <button type="submit" class="btn btn-success" style="height: 40px; width: 90px;">Ara</button>
+      </div>
+    </form>
+    </div>
+  </nav>
 
 
-                                    <button type="button" class="btn">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" fill="#666666" class="bi bi-flag" viewBox="0 1 16 16">
-                        <path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001M14 1.221c-.22.078-.48.167-.766.255-.81.252-1.872.523-2.734.523-.886 0-1.592-.286-2.203-.534l-.008-.003C7.662 1.21 7.139 1 6.5 1c-.669 0-1.606.229-2.415.478A21 21 0 0 0 3 1.845v6.433c.22-.078.48-.167.766-.255C4.576 7.77 5.638 7.5 6.5 7.5c.847 0 1.548.28 2.158.525l.028.01C9.32 8.29 9.86 8.5 10.5 8.5c.668 0 1.606-.229 2.415-.478A21 21 0 0 0 14 7.655V1.222z"></path>
-                      </svg>
-                                        <span class="visually-hidden">Button</span>
-                                      </button>
-                                </div>
-                            </div>
-                        </div>
-            </li>
 
-            <li class="list-group-item">
-                <div class="comment-header">
-                    <div class="comment-info" style="box-sizing:border-box; display:flex; gap: 12px; color: #666666; font-size: 14px;">
-                        <div class="comment-info-item" style="color: #1C1C1C; font-size: 15px;">Ç**K**</div><div class="comment-info-item">11.12.2002</div>
-                    </div>
-                </div>
-                <div class="comment-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+  <div class="d-flex justify-content-center">
+    <div class="card" style="width: 50rem; margin-top: 20px;">
+      <div class="card-body">
+        <div class="container">
 
-                    <div class="comment-text" style="margin: 12px 0;"><p>Doğdum</p>
-                    </div>
-
-                    <div class="seller-action" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <div class="rnr-com-like">
-                            <button type="button" class="btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="#666666" class="bi bi-hand-thumbs-up-fill" viewBox="0 2 16 16">
-                <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"></path>
-              </svg>
-                                <span class="visually-hidden">Button</span>
-                              </button><span style="color: #a3a2a2; font-size: 12px;">(0)</span>
-                        </div>
-
-
-                        <button type="button" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" fill="#666666" class="bi bi-flag" viewBox="0 1 16 16">
-            <path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001M14 1.221c-.22.078-.48.167-.766.255-.81.252-1.872.523-2.734.523-.886 0-1.592-.286-2.203-.534l-.008-.003C7.662 1.21 7.139 1 6.5 1c-.669 0-1.606.229-2.415.478A21 21 0 0 0 3 1.845v6.433c.22-.078.48-.167.766-.255C4.576 7.77 5.638 7.5 6.5 7.5c.847 0 1.548.28 2.158.525l.028.01C9.32 8.29 9.86 8.5 10.5 8.5c.668 0 1.606-.229 2.415-.478A21 21 0 0 0 14 7.655V1.222z"></path>
-          </svg>
-                            <span class="visually-hidden">Button</span>
-                          </button>
-                    </div>
-                </div>
+          <div class="d-flex justify-content-between">
+            <p class="lead" style="font-size: 35px;">Tüm Değerlendirmeler</p>
+            <div class="dropdown" style="margin-right: 20px; margin-top: 10px;">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Sırala
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item {% if sort_type != 2 or sort_type != 3 %}active{%endif%}" href="/?sort=1">Önerilen</a></li>
+                <li><a class="dropdown-item {% if sort_type == 2 %}active{%endif%}" href="/?sort=2">Yeniden eskiye</a></li>
+                <li><a class="dropdown-item {% if sort_type == 3 %}active{%endif%}" href="/?sort=3">Eskiden yeniye</a></li>
+              </ul>
             </div>
-    
-            </li>
-            </ul>
-
-            <div class="bd-example m-0 border-0">
-              <nav class="mx-auto" aria-label="Standard pagination example " style="width: 167.15px; margin-top: 20px ;">
-                <ul class="pagination">
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                      <span aria-hidden="true">«</span>
-                    </a>
-                  </li>
-                  <li class="page-item"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                      <span aria-hidden="true">»</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-              
-        </div>
-
           </div>
+          <hr class="rounded" style="border-top: solid 5px #e91d34;">
 
-            
-        </div>
-              </div>
+          <ul class="list-group list-group-flush">
 
-
-              <div class="d-flex justify-content-center">
-              <div class="card" style="margin-top: 20px; margin-bottom: 20px; width: 60rem;">
-                <div class="card-body">
-                <div class="container">
-                    <div class="input-group" style="height: 10rem;">
-                        <textarea class="form-control" style="resize: none;" placeholder="Deneyimlerinizi bizimle paylaşın"></textarea>
-                      </div>
-
-                    <div class="bottom-button" style="display: flex; justify-content: space-between; align-items: center; gap: 60px;">
-                    <div class="input-group" style="margin-top: 10px;">
-                        <input type="text" aria-label="First name" placeholder="Ad" class="form-control">
-                        <input type="text" aria-label="Last name" placeholder="Soyad" class="form-control">
-                      </div>
-
-                      <button type="button" class="btn btn-success" style="margin-top: 10px; height: 40px; width: 150px;">Yorum yap</button>  
-
-                    </div>
-                    </div>
-
-                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 4px;">
-                      Yorumunuz başarıyla paylaşılmıştır! Teşekkür ederiz.
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
-
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 4px;">
-                      Bu yorum paylaşılamamaktadır lütfen düzelterek tekrar deneyiniz.
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-
-
-
+            {% for comment in comments %}
+            <li class="list-group-item">
+              <div class="comment-header">
+                <div class="comment-info"
+                  style="box-sizing:border-box; display:flex; gap: 12px; color: #666666; font-size: 14px;">
+                  <div class="comment-info-item" style="color: #1C1C1C; font-size: 15px;">{{ comment.username }}</div>
+                  <div class="comment-info-item">{{ comment.date_posted }}</div>
                 </div>
+              </div>
+              <div class="comment-bottom" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="comment-text" style="margin: 12px 0;">
+                  <p>{{ comment.comment }}</p>
+                </div>
+                <!-- Like and Report Buttons -->
+
+                <div class="seller-action" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                  <form class="rnr-com-like" action="{{ url_for('like_comment', comment_id=comment.id) }}" method="post">
+                    <button type="submit" class="btn">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="#666666"
+                        class="bi bi-hand-thumbs-up-fill" viewBox="0 2 16 16">
+                        <path
+                          d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z">
+                        </path>
+                      </svg>
+                    </button><span style="color: #a3a2a2; font-size: 12px;">{{ comment.timeslike }}</span>
+                  </form>
+
+                  <form action="{{ url_for('report_comment', comment_id=comment.id) }}" method="post">
+                    <button type="submit" class="btn">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" fill="#666666" class="bi bi-flag"
+                        viewBox="0 1 16 16">
+                        <path
+                          d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001M14 1.221c-.22.078-.48.167-.766.255-.81.252-1.872.523-2.734.523-.886 0-1.592-.286-2.203-.534l-.008-.003C7.662 1.21 7.139 1 6.5 1c-.669 0-1.606.229-2.415.478A21 21 0 0 0 3 1.845v6.433c.22-.078.48-.167.766-.255C4.576 7.77 5.638 7.5 6.5 7.5c.847 0 1.548.28 2.158.525l.028.01C9.32 8.29 9.86 8.5 10.5 8.5c.668 0 1.606-.229 2.415-.478A21 21 0 0 0 14 7.655V1.222z">
+                        </path>
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+                
 
               </div>
-              </div>
+            </li>
+            {% endfor %}
 
-              <div class="b-example-divider"></div>
-              
-              <div class="container">
-                <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-                  <p class="col-md-4 mb-0 text-body-secondary" style="font-size: 13px; color: #666666;">© Made by  Çağlar Kabaca,  Berkay Biçer,  Arzu Ecem Tüfekçi</p>
-              
-                  <a href="#" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-                    <img src="https://www.tiklagelsin.com/static/tgLogoRed-2e68a5b6e5c0f2f37c792597e8e820f6.png" class="img" width="65px" height="35px">
-                  </a>
-              
-                  <ul class="nav col-md-4 justify-content-end">
-                    <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Anasayfa</a></li>
-                    <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #666666;">
-                        Hakkımızda
-                      </a>
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="https://www.linkedin.com/in/arzu-ecem-tüfekçi-3456931b3/">Arzu Ecem Tüfekçi</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="https://www.linkedin.com/in/caglar-kabaca/">Çağlar Kabaca</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="https://www.linkedin.com/in/berkaybicer/">Berkay Biçer</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </footer>
-              </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  </body>
+          </ul>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <div class="bd-example m-0 border-0">
+    <nav class="mx-auto" aria-label="Standard pagination example " style="width: 167.15px; margin-top: 20px ;">
+      <ul class="pagination">
+        <li class="page-item">
+          <a class="page-link" href="/?n={{ 3* (n - 1) }}&sort={{ sort_type }}" aria-label="Previous">
+            <span aria-hidden="true">«</span>
+          </a>
+        </li>
+
+        {% if n < 3%}
+
+        <li class="page-item"><a class="page-link" href="/?n=3&sort={{ sort_type }}">1</a></li>
+        <li class="page-item"><a class="page-link" href="/?n=6&sort={{ sort_type }}">2</a></li>
+        <li class="page-item"><a class="page-link" href="/?n=9&sort={{ sort_type }}">3</a></li>
+
+        {% else %}
+
+        <li class="page-item"><a class="page-link" href="/?n={{ 3* (n - 1) }}&sort={{ sort_type }}">{{ n - 1 }}</a></li>
+        <li class="page-item"><a class="page-link" href="/?n={{ 3* n }}&sort={{ sort_type }}">{{ n }}</a></li>
+        <li class="page-item"><a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}">{{ n + 1 }}</a></li>
+
+        {% endif %}
+
+        <li class="page-item">
+          <a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}" aria-label="Next">
+            <span aria-hidden="true">»</span>
+          </a>
+        </li>
+
+
+
+      </ul>
+    </nav>
+
+  </div>
+  </div>
+  </li>
+
+
+  </ul>
+
+
+
+  </div>
+
+
+  </div>
+  </div>
+
+
+  <div class="d-flex justify-content-center">
+    <div class="card" style="margin-top: 20px; margin-bottom: 20px; width: 60rem;">
+      <form class="card-body" action="/add_comment" method="post">
+        <div class="container">
+          <div class="input-group" style="height: 10rem;">
+            <textarea name="comment" class="form-control" style="resize: none;"
+              placeholder="Deneyimlerinizi bizimle paylaşın"></textarea>
+          </div>
+          <div class="bottom-button"
+            style="display: flex; justify-content: space-between; align-items: center; gap: 60px;">
+            <div class="input-group" style="margin-top: 10px;">
+              <input type="text" name="firstname" aria-label="First name" placeholder="Ad" class="form-control">
+              <input type="text" name="lastname" aria-label="Last name" placeholder="Soyad" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success" style="margin-top: 10px; height: 40px; width: 150px;">Yorum
+              yap</button>
+          </div>
+        </div>
+        
+        {% if successful == '1' %}
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 4px;">
+          Yorumunuz başarıyla paylaşılmıştır! Teşekkür ederiz.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        {% endif %}
+
+        {% if successful == '0' %}
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 4px;">
+          Bu yorum paylaşılamamaktadır lütfen düzelterek tekrar deneyiniz.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+
+    </div>
+    </form>
+  </div>
+
+
+
+
+
+  <div class="b-example-divider"></div>
+
+
+
+
+
+  <div class="container">
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+      <p class="col-md-4 mb-0 text-body-secondary" style="font-size: 13px; color: #666666;">© Made by Çağlar Kabaca,
+        Berkay Biçer, Arzu Ecem Tüfekçi</p>
+
+      <a href="#"
+        class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <img src="https://www.tiklagelsin.com/static/tgLogoRed-2e68a5b6e5c0f2f37c792597e8e820f6.png" class="img"
+          width="65px" height="35px">
+      </a>
+
+      <ul class="nav col-md-4 justify-content-end">
+        <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Anasayfa</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+            style="color: #666666;">
+            Hakkımızda
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="https://www.linkedin.com/in/arzu-ecem-tüfekçi-3456931b3/">Arzu Ecem
+                Tüfekçi</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="https://www.linkedin.com/in/caglar-kabaca/">Çağlar Kabaca</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="https://www.linkedin.com/in/berkaybicer/">Berkay Biçer</a></li>
+          </ul>
+        </li>
+      </ul>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>
