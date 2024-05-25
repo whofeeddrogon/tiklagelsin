@@ -25,6 +25,7 @@ def get_label_comment(comment) -> tuple[Label, float]:
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
+    conn.text_factory = lambda x: x.decode('utf-8')
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -300,6 +301,26 @@ def logout():
     flash('Başarıyla çıkış yapıldı', 'ok')
 
     return redirect(url_for('login'))
+
+# download işlemleri
+import csv
+from flask import send_file
+
+@app.route('/download', methods=['GET'])
+def download():
+    date = '-'.join(datetime.datetime.now().strftime("%B %d, %Y %I:%M%p").split())
+    filename = f'{date}-{uuid.uuid4()}'
+
+    conn = get_db_connection()
+    data = conn.execute('SELECT * FROM comments').fetchall()
+    conn.close()
+
+    with open(f'outputs/{filename}.csv', 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['index', 'user', 'text', 'timesreported', 'timeslike', 'ai_label', 'confidence', 'date', 'is_anon', 'admin_label', 'admin_date', 'is_showed'])
+        writer.writerows(data)
+    
+    return send_file(f'outputs/{filename}.csv', as_attachment=True)
 
 if __name__ == '__main__':
     app.secret_key = 'SECRET_KEY_MY_SECRET_KEY_MY_SECRET_KEY'
