@@ -3,6 +3,7 @@ import sqlite3
 import uuid
 import datetime
 import hashlib
+import math
 
 from api import Response, Label, send_comment
 
@@ -47,19 +48,35 @@ def index():
         return redirect(url_for('login'))
 
     conn = get_db_connection()
+    query_string = 'SELECT * FROM comments WHERE is_showed = 1'
 
-    sort_type = request.args.get('sort', 1)
-    if sort_type == 1:
-        query_string = 'SELECT * FROM comments WHERE label = "NON" ORDER BY timeslike DESC'
-    elif sort_type == 2:
-        query_string = 'SELECT * FROM comments WHERE label = "NON" ORDER BY id'
+    sort_type = int(request.args.get('sort_type', 0))
+    
+    if sort_type == 0:
+        sort_type = int(session.get('sort_type', 1))
     else:
-        query_string = 'SELECT * FROM comments WHERE label = "NON" ORDER BY id DESC'
+        session['sort_type'] = sort_type
+
+    if sort_type == 1:
+        query_string += ' ORDER BY timeslike DESC'
+    elif sort_type == 2:
+        query_string += ' ORDER BY id'
+    elif sort_type == 3:
+        query_string += ' ORDER BY id DESC'
 
 
+    page = int(request.args.get('page', '0'))
     comments = list(conn.execute(query_string).fetchall())
-    comments = [dict(row) for row in comments]
+    total_page = math.ceil(len(comments) / 5)
+
+    comments = [dict(row) for row in comments[5 * page: 5*page + 5]]
     all_users = conn.execute('SELECT * FROM users').fetchall()
+
+    page = {
+            'prev_num': page - 1,
+            'next_num': page + 1,
+            'total_page': total_page
+            }
 
     for comment in comments:
         comment_user = None
@@ -75,7 +92,8 @@ def index():
     user = conn.execute('SELECT * FROM users WHERE uuid = ?', (session_user, )).fetchall()[0]
     conn.close()
 
-    return render_template('index.html', user = user, comments=comments, n = 3 // 3, sort_type = sort_type)
+    return render_template('index.html', user = user, comments=comments, \
+                           page = page, sort_type = sort_type)
 
 @app.route('/add_comment', methods=['POST', 'GET'])
 def add_comment():
@@ -83,16 +101,14 @@ def add_comment():
     user = session.get('user')
     comment = request.form.get('comment')
     is_anon = request.form.get('anon', '0')
-    if is_anon != 0:
-        is_anon = 1
 
     # label and conf
     label, conf = get_label_comment(comment)
     is_toxic = label == Label.TOXIC
 
     conn = get_db_connection()
-    conn.execute('INSERT INTO comments (user_uuid, comment, timesreported, timeslike, label, confidence, date_posted, is_anon) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                 (user, comment, 0, 0, 'NON' if not is_toxic else 'TOXIC', conf, datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), is_anon,))
+    conn.execute('INSERT INTO comments (user_uuid, comment, timesreported, timeslike, label, confidence, date_posted, is_anon, is_showed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                 (user, comment, 0, 0, 'NON' if not is_toxic else 'TOXIC', conf, datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), is_anon, 1 if not is_toxic else 0))
     conn.commit()
     conn.close()
     
@@ -124,22 +140,107 @@ def search():
     conn.close()
     return render_template('index.html', comments=searched_comments, n = 0)
 
+## ADMIN KISIMLARI
+
 @app.route('/admin', methods=['GET'])
 def admin():
+
     conn = get_db_connection()
+
+    user = session.get('user')
+    all_users = conn.execute('SELECT * FROM users WHERE uuid = ? and is_admin = ?', (user, 1, )).fetchall()
+    if len(all_users) <= 0:
+        flash('İzniniz yok!!', 'error')
+        return redirect(url_for('index'))
+
     all_comments = conn.execute('SELECT * FROM comments').fetchall()
     all_comments = [dict(row) for row in all_comments]
     conn.close()
 
     for comment in all_comments:
-        if comment['confidence'] < 0.6:
-            comment['flagged'] = True
+        conf = comment['confidence']
+        if comment['label'] == 'NON':
+            conf = 1 - conf
+        comment['toxic_conf'] = conf
 
-    reported_comments = list(filter(lambda c: True if c['timesreported'] > 0 else False, all_comments))
-    published_comments = list(filter(lambda c: True if c['label'] == 'NON' else False, all_comments))
-    deteced_comments = list(filter(lambda c: True if c['label'] == 'TOXIC' else False, all_comments))
+    reported_comments = list(filter(lambda c: True if c['timesreported'] > 0 and not c['admin_label'] else False, all_comments))
+    published_comments = list(filter(lambda c: c['is_showed'], all_comments))
+    deteced_comments = list(filter(lambda c: not c['is_showed'], all_comments))
 
     return render_template('admin.html', reported_comments = reported_comments, published_comments = published_comments, deteced_comments = deteced_comments)
+
+"""
+    Admin, eğer yorum çok raporlandıysa veya yanlış labellandığı düşünülüyorsa
+    düzeltme işlemi yapılıyor
+"""
+@app.route('/accept', methods=['GET'])
+def accept():
+    id = request.args.get('id')
+
+    conn = get_db_connection()
+    comments = conn.execute('SELECT * FROM comments WHERE id = ?', (id, )).fetchall()
+
+    if len(comments) <= 0:
+        flash('Bir hata meydana geldi!', 'error')
+        conn.close()
+        return redirect(url_for('admin'))
+    
+    conn.execute('UPDATE comments SET admin_label=?, admin_datetime=?, is_showed=? WHERE id = ?', \
+                    ('NON', datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), 1, id, ))
+    conn.commit()
+    
+    conn.close()
+    flash('Başarıyla işlem gerçekleştirildi', 'ok')
+    return redirect(url_for('admin'))
+
+
+"""
+    Admin, yorumu toxic olarak labellıyor 
+"""
+@app.route('/delete', methods=['GET'])
+def delete():
+    id = request.args.get('id')
+
+    conn = get_db_connection()
+    comments = conn.execute('SELECT * FROM comments WHERE id = ?', (id, )).fetchall()
+
+    if len(comments) <= 0:
+        flash('Bir hata meydana geldi!', 'error')
+        conn.close()
+        return redirect(url_for('admin'))
+
+    conn.execute('UPDATE comments SET admin_label=?, admin_datetime=?, is_showed=? WHERE id = ?', \
+                    ('TOXIC', datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), 0, id, ))
+    conn.commit()
+
+    conn.close()
+    flash('Başarıyla işlem gerçekleştirildi', 'ok')
+    return redirect(url_for('admin'))
+
+"""
+    Admin, kullanıcıyı engelliyor sistemden
+"""
+@app.route('/block', methods=['GET'])
+def block():
+    id = request.args.get('id')
+
+    conn = get_db_connection()
+    comments = conn.execute('SELECT * FROM comments WHERE id = ?', (id, )).fetchall()
+    if len(comments) <= 0:
+        flash('Bir hata meydana geldi!', 'error')
+        conn.close()
+        return redirect(url_for('admin'))
+    comment = comments[0]
+
+    conn.execute('UPDATE users SET is_allowed=? WHERE uuid = ?', \
+                    (0, comment['user_uuid'], ))
+    conn.commit()
+
+    flash('Başarıyla işlem gerçekleştirildi', 'ok')
+    return redirect(url_for('admin'))
+
+
+## LOGIN KISIMLARI
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -159,7 +260,10 @@ def login():
 
     if len(found_users) <= 0:
         flash('Mail adresi veya şifreniz hatalı, lütfen kontrol ediniz!', 'error')
-        return redirect(url_for('login'))    
+        return redirect(url_for('login'))
+    elif found_users[0]['is_allowed'] == 0:
+        flash('Yasaklandınız', 'error')
+        return redirect(url_for('login'))
     session['user'] = found_users[0]['uuid']
 
     return redirect(url_for('index'))

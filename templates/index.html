@@ -50,11 +50,11 @@
                 Sırala
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item {% if sort_type != 2 or sort_type != 3 %}active{%endif%}"
-                    href="/?sort=1">Önerilen</a></li>
-                <li><a class="dropdown-item {% if sort_type == 2 %}active{%endif%}" href="/?sort=2">Yeniden eskiye</a>
+                <li><a class="dropdown-item {% if sort_type != 2 and sort_type != 3 %}active{%endif%}"
+                    href="{{ url_for('index', sort_type=1) }}">Önerilen</a></li>
+                <li><a class="dropdown-item {% if sort_type == 2 %}active{%endif%}" href="{{ url_for('index', sort_type=2) }}">Yeniden eskiye</a>
                 </li>
-                <li><a class="dropdown-item {% if sort_type == 3 %}active{%endif%}" href="/?sort=3">Eskiden yeniye</a>
+                <li><a class="dropdown-item {% if sort_type == 3 %}active{%endif%}" href="{{ url_for('index', sort_type=3) }}">Eskiden yeniye</a>
                 </li>
               </ul>
             </div>
@@ -117,41 +117,12 @@
     </div>
   </div>
 
-  <div class="bd-example m-0 border-0">
-    <nav class="mx-auto" aria-label="Standard pagination example " style="width: 167.15px; margin-top: 20px ;">
-      <ul class="pagination">
-        <li class="page-item">
-          <a class="page-link" href="/?n={{ 3* (n - 1) }}&sort={{ sort_type }}" aria-label="Previous">
-            <span aria-hidden="true">«</span>
-          </a>
-        </li>
-
-        {% if n < 3%} <li class="page-item"><a class="page-link" href="/?n=3&sort={{ sort_type }}">1</a></li>
-          <li class="page-item"><a class="page-link" href="/?n=6&sort={{ sort_type }}">2</a></li>
-          <li class="page-item"><a class="page-link" href="/?n=9&sort={{ sort_type }}">3</a></li>
-
-          {% else %}
-
-          <li class="page-item"><a class="page-link" href="/?n={{ 3* (n - 1) }}&sort={{ sort_type }}">{{ n - 1 }}</a>
-          </li>
-          <li class="page-item"><a class="page-link" href="/?n={{ 3* n }}&sort={{ sort_type }}">{{ n }}</a></li>
-          <li class="page-item"><a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}">{{ n + 1 }}</a>
-          </li>
-
-          {% endif %}
-
-          <li class="page-item">
-            <a class="page-link" href="/?n={{ 3* (n + 1)}}&sort={{ sort_type }}" aria-label="Next">
-              <span aria-hidden="true">»</span>
-            </a>
-          </li>
-
-
-
-      </ul>
-    </nav>
-
+  <div class="container w-25 my-3 d-flex justify-content-center">
+      <button class="border-0 bg-white">{% if page.prev_num >= 0 %}<a href="{{ url_for('index', page=page.prev_num) }}" class="btn btn-primary-outline border-black ">Geri</a>{% endif %}</button>
+      <button class="border-0 bg-white">{% if page.next_num < page.total_page %}<a href="{{ url_for('index', page=page.next_num) }}" class="btn btn-primary-outline border-black">İleri</a>{% endif %}</button>
   </div>
+
+
   </div>
   </li>
 
@@ -179,7 +150,7 @@
             style="display: flex; justify-content: space-between; align-items: center; gap: 60px;">
 
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" name="anon">
+              <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" name="anon">
               <label class="form-check-label" for="flexCheckDefault">
                 Yorum yaparken ismim gözükmesin
               </label>
