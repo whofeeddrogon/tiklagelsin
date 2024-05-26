@@ -1,6 +1,6 @@
 URL = 'http://5456715068009545.eu-central-1.pai-eas.aliyuncs.com/'
 ENDPOINT = 'api/predict/manuelabem_revised'
-KEY = 'ZGNkN2I1OGZjMmQ5ZWRjZTc3NDk1ODllMTg4MTg3MGNjZmRkYmQwNg=='
+KEY = 'YTJkYWNjNjc0YjgyNjBmYzI5NTM5MTAwZTk3ZGM4N2FjMjhkMzQ5OA=='
 
 import requests
 from enum import Enum
