@@ -10,6 +10,10 @@ from api import Response, Label, send_comment
 app = Flask(__name__)
 DATABASE = 'comments.db'
 
+with open('karaliste.json', encoding='utf-8') as f:
+    import json
+    BLACKLIST = json.loads(f.read())
+
 """
     args:
         comment: str
@@ -22,6 +26,12 @@ DATABASE = 'comments.db'
 def get_label_comment(comment) -> tuple[Label, float]:
     resp = send_comment(comment)
     return resp.get_label(), resp.get_conf()
+
+def check_blacklist(comment) -> bool:
+    for word in comment.split():
+        if word in BLACKLIST:
+            return True
+    return False
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE)
@@ -61,9 +71,9 @@ def index():
     if sort_type == 1:
         query_string += ' ORDER BY timeslike DESC'
     elif sort_type == 2:
-        query_string += ' ORDER BY id'
-    elif sort_type == 3:
         query_string += ' ORDER BY id DESC'
+    elif sort_type == 3:
+        query_string += ' ORDER BY id'
 
 
     page = int(request.args.get('page', '0'))
@@ -103,13 +113,18 @@ def add_comment():
     comment = request.form.get('comment')
     is_anon = request.form.get('anon', '0')
 
-    # label and conf
-    label, conf = get_label_comment(comment)
-    is_toxic = label == Label.TOXIC
+    if check_blacklist(comment):
+        label = 'BLACKLIST'
+        conf = 1
+        is_toxic = True
+    else:
+        # label and conf
+        label, conf = get_label_comment(comment)
+        is_toxic = label == Label.TOXIC
 
     conn = get_db_connection()
     conn.execute('INSERT INTO comments (user_uuid, comment, timesreported, timeslike, label, confidence, date_posted, is_anon, is_showed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                 (user, comment, 0, 0, 'NON' if not is_toxic else 'TOXIC', conf, datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), is_anon, 1 if not is_toxic else 0))
+                 (user, comment, 0, 0, 'NON' if label == Label.NON else 'TOXIC' if label == Label.TOXIC else 'BLACKLIST', conf, datetime.datetime.now().strftime("%B %d, %Y %I:%M%p"), is_anon, 1 if not is_toxic else 0))
     conn.commit()
     conn.close()
     
@@ -147,14 +162,14 @@ def search():
     if sort_type == 0:
         sort_type = int(session.get('sort_type', 1))
     else:
-        session['sort_type'] = sort_type
+        session['sort_type'] = int(sort_type)
 
     if sort_type == 1:
         query_string += ' ORDER BY timeslike DESC'
     elif sort_type == 2:
-        query_string += ' ORDER BY id'
-    elif sort_type == 3:
         query_string += ' ORDER BY id DESC'
+    elif sort_type == 3:
+        query_string += ' ORDER BY id'
 
     search = request.form.get('search')
 
