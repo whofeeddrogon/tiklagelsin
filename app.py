@@ -41,15 +41,46 @@ def get_db_connection():
 
 def increment_like(comment_id):
     conn = get_db_connection()
+
+    liked_comments = session.get('liked_comments')
+    if liked_comments and len(liked_comments) > 0 and comment_id in liked_comments:
+        conn.execute('UPDATE comments SET timeslike = timeslike - 1 WHERE id = ?', (comment_id,))
+        conn.commit()
+        conn.close()
+        session['liked_comments'].remove(comment_id)
+        flash('Beğeniniz geri alındı', 'ok')
+        return False
+
     conn.execute('UPDATE comments SET timeslike = timeslike + 1 WHERE id = ?', (comment_id,))
     conn.commit()
     conn.close()
+    if liked_comments:
+        session['liked_comments'] += [comment_id]
+    else:
+        session['liked_comments'] = [comment_id]
+
+    return True
 
 def increment_report(comment_id):
     conn = get_db_connection()
+
+    reported_comments = session.get('reported_comments')
+    if reported_comments and len(reported_comments) > 0 and comment_id in reported_comments:
+        conn.execute('UPDATE comments SET timesreported = timesreported - 1 WHERE id = ?', (comment_id,))
+        conn.commit()
+        session['reported_comments'].remove(comment_id)
+        flash('Raporlama işlemi geri alındı.', 'ok')
+        return False
+
     conn.execute('UPDATE comments SET timesreported = timesreported + 1 WHERE id = ?', (comment_id,))
     conn.commit()
     conn.close()
+    if reported_comments:
+        session['reported_comments'] += [comment_id]
+    else:
+        session['reported_comments'] = [comment_id]
+
+    return True
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -137,14 +168,14 @@ def add_comment():
 
 @app.route('/like/<int:comment_id>', methods=['POST'])
 def like_comment(comment_id):
-    increment_like(comment_id)
-    flash('Beğeniniz yoruma başarıyla eklendi.', 'ok')
+    if increment_like(comment_id):
+        flash('Beğeniniz yoruma başarıyla eklendi.', 'ok')
     return redirect(url_for('index'))
 
 @app.route('/report/<int:comment_id>', methods=['POST'])
 def report_comment(comment_id):
-    increment_report(comment_id)
-    flash('Yorum başarıyla işaretlendi, teşekkürler.', 'ok')
+    if increment_report(comment_id):
+        flash('Yorum başarıyla raporlandı, teşekkürler.', 'ok')
     return redirect(url_for('index'))
 
 @app.route('/search', methods=['GET', 'POST'])
